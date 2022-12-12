@@ -1,3 +1,4 @@
+const generateId = require('./generateId')
 const express = require('express')
 const app = express()
 app.use(express.json())
@@ -29,6 +30,7 @@ let persons = [
       "number": "39-23-6423122"
     }
 ]
+generateId.init(persons);
 
 app.get("/api/persons", (req, res) => {
   res.json(persons);
@@ -55,6 +57,14 @@ app.delete("/api/persons/:id", (req, res) => {
   console.log("deleting ", person);
   persons = persons.filter(p => p.id !== id);
   res.status(204).end();
+})
+
+app.post("/api/persons", (req, res) => {
+  const person = req.body;
+  person.id = generateId.next();
+  persons.push(person); // why not here, because no requirement for persons being immutable
+  console.log("post: person=", person);
+  res.json(person);
 })
 
 app.listen(port, () => {
